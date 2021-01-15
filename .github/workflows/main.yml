@@ -29,3 +29,8 @@ jobs:
         run: |
           docker build -t docker.io/devopslifter/pod-info:${{ github.sha }} .
         working-directory: helm-operator-get-started
+      
+      - name: Push an image from Dock Hub
+        run: |
+          docker puah devopslifter/pod-info:${{ github.sha }}
+        working-directory: helm-operator-get-started
