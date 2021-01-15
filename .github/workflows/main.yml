@@ -1,0 +1,31 @@
+name: GitOps Test
+on:
+  push:
+    branches:
+      - main
+    paths:
+    - 'helm-operator-get-started/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+    - 'helm-operator-get-started'
+jobs:
+  build_push_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get branch name
+        if: github.event_name != 'pull_request'
+        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_ENV
+
+      - name: Get branch name on pull request
+        if: github.event_name == 'pull_request'
+        run: echo "BRANCH_NAME=$(echo ${GITHUB_HEAD_REF#refs/heads/})" >> $GITHUB_ENV
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Build an image from Dockerfile
+        run: |
+          docker build -t docker.io/devopslifter/pod-info:${{ github.sha }} .
+        working-directory: helm-operator-get-started
